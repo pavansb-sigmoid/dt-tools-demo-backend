@@ -65,29 +65,34 @@ curl -s http://localhost:8000/api/v1/health
 ```bash
 curl -s -X POST http://localhost:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "user@pfizer.com", "password": "anything"}'
+  -d '{"email": "demo@pfizer.com", "password": "anything"}'
 ```
 
 The response will contain an `access_token`:
 
 ```json
 {
-  "access_token": "<jwt>",
+  "access_token": "mock-<uuid>",
   "token_type": "bearer",
   "user": {
-    "email": "user@pfizer.com",
-    "name": "Demo User",
-    "roles": ["planner"]
+    "email": "demo@pfizer.com",
+    "name": "Demo User"
   }
 }
 ```
 
 ### 3. Fetch Mock Data (Protected)
 
-First, store the token in a shell variable:
+First, login and store the token in a shell variable:
 
 ```bash
-TOKEN="<paste access_token here>"
+# Login and extract token (requires jq or manual copy-paste)
+TOKEN=$(curl -s -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@pfizer.com","password":"anything"}' | jq -r '.access_token')
+
+# Or manually set:
+# TOKEN="mock-<paste-uuid-here>"
 ```
 
 Then call a protected mock data endpoint, for example PreCheck dashboard data:
@@ -97,11 +102,26 @@ curl -s http://localhost:8000/api/v1/mock/precheck-dashboard \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Or fetch all mock payloads at once:
+Example response:
 
-```bash
-curl -s http://localhost:8000/api/v1/mock/all \
-  -H "Authorization: Bearer $TOKEN"
+```json
+{
+  "market": "it",
+  "brand": "paxlovid",
+  "timePeriod": "q4-2025",
+  "kpis": {
+    "totalHcps": 150,
+    "totalInteractions": 450,
+    "attainment": 85.5,
+    "callPlanCompliance": 92.3
+  },
+  "charts": {
+    "segmentation": { ... },
+    "frequency": { ... },
+    "regionalComparison": { ... }
+  },
+  "metrics": { ... }
+}
 ```
 
 ## CORS and Frontend Integration

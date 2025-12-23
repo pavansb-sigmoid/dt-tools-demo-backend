@@ -11,7 +11,6 @@ router = APIRouter()
 
 
 DEMO_EMAIL = "demo@pfizer.com"
-DEMO_PASSWORD = "anything"
 
 
 class LoginRequest(BaseModel):
@@ -20,7 +19,6 @@ class LoginRequest(BaseModel):
 
 
 class User(BaseModel):
-    id: str
     email: str
     name: str
 
@@ -35,11 +33,11 @@ def _create_mock_token() -> str:
     return f"mock-{uuid.uuid4()}"
 
 
-def get_current_user(authorization: Optional[str] = Header(default=None)) -> User:
+def require_mock_auth(authorization: Optional[str] = Header(default=None)) -> User:
     """
-    Very simple dev-only auth:
-    - Expects Authorization: Bearer mock-<uuid4>
-    - Does not validate the UUID content beyond the prefix.
+    Reusable dependency for mock Bearer token authentication.
+    Expects Authorization: Bearer mock-<uuid4>
+    Returns User if valid, raises 401 otherwise.
     """
     if not authorization:
         raise HTTPException(
@@ -54,27 +52,31 @@ def get_current_user(authorization: Optional[str] = Header(default=None)) -> Use
             detail="Invalid credentials",
         )
 
-    return User(id="u-001", email=DEMO_EMAIL, name="Demo User")
+    return User(email=DEMO_EMAIL, name="Demo User")
+
+
+# Alias for backward compatibility
+get_current_user = require_mock_auth
 
 
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest) -> LoginResponse:
     """
-    Dev-only login endpoint that checks hardcoded credentials.
+    Dev-only login endpoint that checks hardcoded email and accepts any non-empty password.
     """
-    if payload.email != DEMO_EMAIL or payload.password != DEMO_PASSWORD:
+    if payload.email != DEMO_EMAIL or not payload.password or not payload.password.strip():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
 
-    user = User(id="u-001", email=DEMO_EMAIL, name="Demo User")
+    user = User(email=DEMO_EMAIL, name="Demo User")
     token = _create_mock_token()
     return LoginResponse(access_token=token, token_type="bearer", user=user)
 
 
 @router.get("/me", response_model=User)
-def read_me(current_user: User = Depends(get_current_user)) -> User:
+def read_me(current_user: User = Depends(require_mock_auth)) -> User:
     """
     Return the current user if the mock token is valid.
     """

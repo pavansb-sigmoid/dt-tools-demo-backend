@@ -1,0 +1,15 @@
+{
+  "items": [
+    {"id": "paxlovid", "name": "Paxlovid", "marketId": "it"},
+    {"id": "vyndaqel", "name": "Vyndaqel", "marketId": "it"},
+    {"id": "prevnar", "name": "Prevnar", "marketId": "it"},
+    {"id": "ibrance", "name": "Ibrance", "marketId": "it"},
+    {"id": "lorbrena", "name": "Lorbrena", "marketId": "it"},
+    {"id": "vydura", "name": "Vydura", "marketId": "it"},
+    {"id": "xeljanz", "name": "Xeljanz", "marketId": "fr"},
+    {"id": "elysia", "name": "Elysia", "marketId": "fr"},
+    {"id": "enbrel", "name": "Enbrel", "marketId": "de"},
+    {"id": "premarin", "name": "Premarin", "marketId": "de"}
+  ]
+}
+

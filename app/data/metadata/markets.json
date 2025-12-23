@@ -1,0 +1,11 @@
+{
+  "items": [
+    {"id": "it", "name": "Italy"},
+    {"id": "fr", "name": "France"},
+    {"id": "de", "name": "Germany"},
+    {"id": "es", "name": "Spain"},
+    {"id": "jp", "name": "Japan"},
+    {"id": "mx", "name": "Mexico"}
+  ]
+}
+
